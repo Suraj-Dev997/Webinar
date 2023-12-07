@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import '../../../assets/css/style.css'
 import '../../../assets/css/bootstrap/css/bootstrap.min.css'
@@ -6,10 +7,63 @@ import '../../../assets/css/bootstrap/css/bootstrap.min.css'
 const Login = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Logging in with:', userId, password);
+  const handleLogin = async () => {
+    try {
+      const apiUrl = 'https://digiapi.netcastservice.co.in/AccountApi/LoginValidate';
+
+      // Prepare payload
+      const payload = {
+        EmailId: null,
+        EmpCode: userId, // Assuming userId is equivalent to EmpCode
+        Password: password,
+        IpAddress: "::1",
+        UserDevice: null,
+        UserBrowser: null,
+        BrowserDetail: {},
+        LoginTypeField: "EMPCODE",
+        ClientId: "10001",
+        DeptId: "1",
+        UserId: null,
+        CusQuizid: null
+      };
+
+      // Make API call
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      // Parse response JSON
+      const data = await response.json();
+
+      // Check the errorCode in the response
+      if (data.errorCode === "1") {
+        // Successful login, you can handle the response data here
+        console.log('Login successful:', data.responseData);
+        sessionStorage.setItem('userData', JSON.stringify(data.responseData));
+        navigate('/dashboard');
+
+        // Perform additional actions if needed, e.g., redirect to another page
+      } else {
+        // Handle login error
+        
+        console.error('Login failed:', data.errorDetail);
+      }
+
+    } catch (error) {
+      console.error('Error during login:', error.message);
+    }
   };
 
   return (
@@ -37,7 +91,7 @@ const Login = () => {
                     <hr />
                     <div className="input-group">
                       <input
-                        type="email"
+                        type="text"
                         className="form-control"
                         placeholder="User ID"
                         value={userId}
@@ -47,7 +101,7 @@ const Login = () => {
                     </div>
                     <div className="input-group">
                       <input
-                        type="password"
+                        type="text"
                         className="form-control"
                         placeholder="Password"
                         value={password}

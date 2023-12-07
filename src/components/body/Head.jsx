@@ -1,21 +1,36 @@
-import React, { useState } from "react";
+import { useState } from "react";
 // import '../../../assets/css/style.css'
 // import '../../../assets/css/bootstrap/css/bootstrap.min.css'
 // import '../../../assets/icon/themify-icons/themify-icons.css'
 // import '../../../assets/icon/font-awesome/css/font-awesome.min.css'
 // import '../../../assets/icon/icofont/css/icofont.css'
 // import '../../../assets/css/jquery.mCustomScrollbar.css'
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './Head.css'
 
 const Head = () => {
  
-  const [linknum, setLinkNum] = useState(1)
+    const [linknum, setLinkNum] = useState(1);
+    const navigate = useNavigate();
 
   const handelSetActiveLink = (value)=>{
      setLinkNum(value)
   }
+  const handleLogout = () => {
+    // Clear sessionStorage
+    sessionStorage.clear();
+console.log("Logout successful")
+    // Redirect to the home page
+    navigate('/');
+    
+    // Optional: Show a logout success message using toast
+    toast.success('Logout successful!', {
+      position: toast.POSITION.TOP_CENTER,
+    });
+  };
   return (
     <div>
        
@@ -69,7 +84,7 @@ const Head = () => {
                                     <ul className="show-notification profile-notification">
 
                                         <li>
-                                            <Link to='/'>
+                                            <Link onClick={handleLogout}>
                                                 <i className="ti-layout-sidebar-left"></i> Logout
                                             </Link>
                                         </li>
